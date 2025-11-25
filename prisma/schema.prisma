@@ -19,6 +19,7 @@ model User {
   name            String?
   roleId          Int?
   referral_uuid   String   @unique
+  referrer_uuid   String?
   roles           UserHasRole[] // Many-to-many relationship with Role through UserHasRole
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -42,4 +43,12 @@ model UserHasRole {
   updatedAt       DateTime @updatedAt
 }
 
-
+model CommissionSetting {
+  id              Int      @id @default(autoincrement())
+  title           String
+  commissionRate  Float
+  description     String?
+  slug            String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
