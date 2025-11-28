@@ -1,10 +1,10 @@
-const express = require('express');
-const req = require('express/lib/request');
-const userService = require('../../modules/user/user.service');
+const userService = require('./user.service');
 
 const userController = {
     async index(req, res, next){
         try {
+            console.log('Fetching all users');
+            
             const users = await userService.getAllUsers();
             res.status(200).json(users);
         } catch (error) {
@@ -35,7 +35,7 @@ const userController = {
             next(error);
         }
     },
-    async update(){
+    async update(req, res, next){
         try{
             const userId = req.params.id;
             const validateData = await userService.validateUserData(req.body, true);
@@ -48,7 +48,7 @@ const userController = {
             next(error);
         }
     },
-    async delete(){
+    async delete(req, res, next){
         try{
             const userId = req.params.id;
             const deleted = await userService.deleteUser(userId);
@@ -61,3 +61,5 @@ const userController = {
         }
     }
 }
+
+module.exports = userController; // export the userController

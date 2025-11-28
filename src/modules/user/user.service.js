@@ -1,6 +1,6 @@
 const express = require('express');
-const prisma = require('../core/db/prisma');
-
+const prisma = require('../../core/database/prisma');
+console.log('prisma imported:', prisma)
 const userService = {
 
     // Fetch all users
