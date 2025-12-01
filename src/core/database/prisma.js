@@ -6,7 +6,11 @@ const mysql = require('mysql2/promise');
 const pool = mysql.createPool(process.env.DATABASE_URL);
 
 const prisma = new PrismaClient({
-  adapter: { type: 'mysql2', pool }, // <-- correct adapter object for Prisma v7
+    datasources: {
+        db: {
+            url: process.env.DATABASE_URL,
+        },
+    },
 });
 
 module.exports = prisma;

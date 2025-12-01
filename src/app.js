@@ -3,7 +3,7 @@ require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
-const router = require('core/http/router');
+const router = require('./core/http/router');
 const req = require('express/lib/request');
 
 const app = express();

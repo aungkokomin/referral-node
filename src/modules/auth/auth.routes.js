@@ -1,0 +1,43 @@
+const router = require("express").Router();
+const passport = require("passport");
+const { role } = require("../../core/database/prisma");
+require('./auth.login');
+// Define authentication-related routes here
+
+router.post ('/login',(req, res, next) => {
+    passport.authenticate('local-login', (err, user, info) => {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            return res.status(401).json({ message: info.message });
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Login failed' });
+            }
+            return res.status(200).json({
+                message: 'Login successful',
+                user:{
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    role: user.role
+                }
+            });
+        });
+    }) (req, res, next);
+});
+
+router.get('/logout', (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Logout failed' });
+        }
+        res.status(200).json({ message: 'Logout successful' });
+    });
+})
+
+module.exports = router;
+
+
