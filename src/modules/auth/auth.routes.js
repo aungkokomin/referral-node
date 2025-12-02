@@ -29,6 +29,29 @@ router.post ('/login',(req, res, next) => {
     }) (req, res, next);
 });
 
+// Auth0 authentication route
+router.get('/auth0', passport.authenticate('auth0', {
+    scope: 'openid email profile'
+}));
+
+// Auth0 callback route
+router.get('/auth0/callback', passport.authenticate('auth0', {
+    failureRedirect: '/login'
+}), (req, res) => {
+    // Successful authentication
+    res.status(200).json({
+        message: 'Login successful',
+        user: {
+            id: req.user.id,
+            email: req.user.email,
+            name: req.user.name,
+            role: req.user.role
+        }
+    });
+});
+
+// Logout route
+
 router.get('/logout', (req, res) => {
     req.logout((err) => {
         if (err) {
