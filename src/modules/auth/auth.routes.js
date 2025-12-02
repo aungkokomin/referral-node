@@ -51,7 +51,6 @@ router.get('/auth0/callback', passport.authenticate('auth0', {
 });
 
 // Logout route
-
 router.get('/logout', (req, res) => {
     req.logout((err) => {
         if (err) {
