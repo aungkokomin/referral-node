@@ -1,8 +1,8 @@
 const express = require('express');
 const prisma = require('../../core/database/prisma');
-console.log('prisma imported:', prisma)
-const userService = {
+const bcrypt = require('bcrypt');
 
+const userService = {
     // Fetch all users
     async getAllUsers(){
         return await prisma.user.findMany();
@@ -36,6 +36,11 @@ const userService = {
             throw new Error('Invalid email format');
         }
         return { name, email };
+    },
+
+    // Validate user password
+    async validatePassword(password, hashedPassword){
+        return await bcrypt.compare(password, hashedPassword);
     },
 
     // Create a new user
@@ -73,6 +78,47 @@ const userService = {
             where: { id: parseInt(id) }
         });
         return true;
+    },
+
+    // Create personal access token
+    async createPersonalAccessToken(userId, token) {
+        return await prisma.personalAccessToken.create({
+            data: {
+                userId: userId,
+                token: token,
+                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days expiry
+            }
+        });
+    },
+
+    // Find token
+    async findPersonalAccessToken(token) {
+        return await prisma.personalAccessToken.findUnique({
+            where: { token: token },
+            include: { user: true }
+        });
+    },
+
+    // Delete token (for logout)
+    async deletePersonalAccessToken(token) {
+        return await prisma.personalAccessToken.delete({
+            where: { token: token }
+        });
+    },
+
+    // Delete all user tokens (logout from all devices)
+    async deleteAllUserTokens(userId) {
+        return await prisma.personalAccessToken.deleteMany({
+            where: { userId: userId }
+        });
+    },
+
+    // Get all user tokens
+    async getUserTokens(userId) {
+        return await prisma.personalAccessToken.findMany({
+            where: { userId: userId },
+            orderBy: { createdAt: 'desc' }
+        });
     }
 };
 

@@ -1,25 +1,28 @@
 require('dotenv').config(); // Load environment variables from .env file
 
 const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
 const router = require('./core/http/router');
-const req = require('express/lib/request');
 
 const app = express();
 
 // Middleware setup
 app.use(express.json());
-app.use(express.urlencoded({extended: true})); // Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-// Session configuration
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key', // Use a strong secret in production
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-        secure: false,
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000
-    }
-}));
+// Your routes
+const authRoutes = require('./modules/auth/auth.routes');
+app.use('/auth', authRoutes);
+
+// Global error handler (must be last)
+app.use((err, req, res, next) => {
+    console.error('=== GLOBAL ERROR HANDLER ===');
+    console.error('Error:', err);
+    console.error('Stack:', err.stack);
+    
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal Server Error',
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
+
+module.exports = app;

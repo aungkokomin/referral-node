@@ -22,6 +22,8 @@ model User {
   referral_uuid   String   @unique
   referrer_uuid   String?
   roles           UserHasRole[] // Many-to-many relationship with Role through UserHasRole
+  tokens          personalAccessToken[]
+  commissionLogs  CommissionLog[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -44,6 +46,16 @@ model UserHasRole {
   updatedAt       DateTime @updatedAt
 }
 
+model personalAccessToken {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id])
+  token           String   @unique @db.VarChar(255) // Store hashed token
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 model CommissionSetting {
   id              Int      @id @default(autoincrement())
   title           String
@@ -57,6 +69,7 @@ model CommissionSetting {
 model CommissionLog {
   id              Int      @id @default(autoincrement())
   userId          Int
+  user            User     @relation(fields: [userId], references: [id])
   amount          Float
   description     String?
   createdAt       DateTime @default(now())
