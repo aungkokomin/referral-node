@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const authService = require('./auth.login');
+const registerService = require('./auth.register');
 const authMiddleware = require('../../middlewares/auth.middleware');
 
 // Login route
@@ -34,8 +35,43 @@ router.post('/login', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Authentication error:', error);
+        console.error('Authentication error:', error);
         return res.status(500).json({ 
+            message: 'Internal Server Error',
+            error: error.message
+        });
+    }
+});
+
+router.post('/register', async (req, res) => {
+    try {
+        const { email, password, name, refer_id } = req.body;
+        console.log('Registration request for email:', email);
+        // Validate input
+        if (!email || !password || !name) {
+            return res.status(400).json({ 
+                message: 'Name, email and password are required' 
+            });
+        }
+
+        // Attempt registration
+        console.log('Attempting to register user:', email);
+        const result = await registerService.register(email, password, name, refer_id);
+        
+        if (!result.success) {
+            return res.status(400).json({
+                message: result.message
+            });
+        }
+        
+        // Return success with user info
+        return res.status(201).json({
+            message: 'Registration successful',
+            user: result.user
+        });
+    } catch (error) {
+        console.error('Registration error:', error);
+        return res.status(500).json({
             message: 'Internal Server Error',
             error: error.message
         });

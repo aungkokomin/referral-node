@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
 });
 router.use('/auth', require('../../modules/auth/auth.routes'));
 router.use('/users', authMiddleware, require('../../modules/user/user.routes'));
+// router.use('/commissions', require('../../modules/commission/commission.routes'));
 // app.use('/referrals', require('../../modules/referral/referral.routes'));
-// app.use('/commissions', require('../../modules/commission/commission.routes'));
 
 module.exports = router;

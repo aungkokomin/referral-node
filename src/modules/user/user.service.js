@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../core/database/prisma');
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
 
 const userService = {
     // Fetch all users
@@ -21,6 +22,12 @@ const userService = {
             where: {email: email}
         });
     },
+
+    async findUserByReferId(refer_id){
+        return await prisma.user.findUnique({
+            where: { referral_uuid: refer_id }
+        });
+    },
     
     // Validate user data
     async validateUserData(data, isUpdate = false){
@@ -29,8 +36,6 @@ const userService = {
             if(!name || !email){
                 throw new Error('Name and Email are required');
             }
-
-            
         }
         if(email && !/\S+@\S+\.\S+/.test(email)){
             throw new Error('Invalid email format');
@@ -45,11 +50,15 @@ const userService = {
 
     // Create a new user
     async createUser(data){
+        const hashedPassword = await bcrypt.hash(data.password, 10);
         return await prisma.user.create(
             {
                 data: {
                     name: data.name,
-                    email: data.email
+                    email: data.email,
+                    password: hashedPassword, // Hash password before saving
+                    referral_uuid: uuidv4(),
+                    referrer_uuid: data.referrer_uuid,
                 }
             }
         );
@@ -57,6 +66,7 @@ const userService = {
 
     // Update an existing user
     async updateUser(id, data){
+        this.validateUserData(data, true);
         return await prisma.user.update({
             where: { id: parseInt(id) },
             data: {
@@ -119,6 +129,14 @@ const userService = {
             where: { userId: userId },
             orderBy: { createdAt: 'desc' }
         });
+    },
+
+    /**
+     * Generate UUID referral code
+     * 
+     */
+    async generateReferralUUID() {
+        return uuidv4();
     }
 };
 
