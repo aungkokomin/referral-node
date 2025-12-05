@@ -19,11 +19,11 @@ const commissionService = {
         return await prisma.commissionLog.create(
             {
                 data: {
-                    userId: data.userId,
+                    // userId: data.userId,
                     amount: data.amount,
                     description: data.description,
                     user: {
-                        connect: { id: data.user_id }
+                        connect: { id: data.userId }
                     }
                 }
             }

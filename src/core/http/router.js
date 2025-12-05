@@ -8,7 +8,8 @@ router.get('/', (req, res) => {
 });
 router.use('/auth', require('../../modules/auth/auth.routes'));
 router.use('/users', authMiddleware, require('../../modules/user/user.routes'));
-// router.use('/commissions', require('../../modules/commission/commission.routes'));
+router.use('/commission-logs', require('../../modules/commission/commission-log.routes'));
+router.use('/commission-settings', authMiddleware, require('../../modules/commission/commission-setting.routes'));
 // app.use('/referrals', require('../../modules/referral/referral.routes'));
 
 module.exports = router;
