@@ -24,6 +24,17 @@ const commissionController = {
             res.status(500).json({ message: 'Error fetching commission log', error });
         }
     },
+
+    async createCommissionLog(req, res) {
+        try {
+            const { userId } = req.params;
+            const commissionData = req.body;
+            const newCommission = await commissionService.createCommissionLog(userId, commissionData);
+            res.status(201).json(newCommission);
+        } catch (error) {
+            res.status(500).json({ message: 'Error creating commission log', error });
+        }
+    }
 }
 
 module.exports = commissionController;

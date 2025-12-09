@@ -41,6 +41,11 @@ const commissionService = {
             amount: commissionFee,
             description: `Commission fee for payment of ${paidAmount}`
         });
+    },
+
+    // Count all commissions
+    async countCommissionLogs(){
+        return await prisma.commissionLog.count();
     }
 }
 

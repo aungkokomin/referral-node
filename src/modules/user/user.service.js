@@ -6,7 +6,20 @@ const { v4: uuidv4 } = require('uuid');
 const userService = {
     // Fetch all users
     async getAllUsers(){
-        return await prisma.user.findMany();
+        return await prisma.user.findMany({
+            include: {
+                roles: {
+                    include: {
+                        role: true
+                    }
+                }
+            }
+        });
+    },
+
+    // Count all users
+    async countUsers(){
+        return await prisma.user.count();
     },
     
     // Fetch user by ID
