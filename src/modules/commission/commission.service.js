@@ -9,8 +9,12 @@ const commissionService = {
 
     // Fetch commissions by user ID
     async getCommissionsByUserId(userId){
+        console.log('Fetching commissions for userId:', userId);
         return await prisma.commissionLog.findMany({
-            where: { user_id: parseInt(userId) }
+            where: { userId: parseInt(userId) },
+            include: {
+                user: true
+            }
         });
     },
 

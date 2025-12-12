@@ -32,9 +32,18 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: 'Token has been revoked' });
         }
 
-        // Attach user to request object
-        req.user = tokenRecord.user;
-        req.token = token; // Store token for logout
+        // Extract roles from user
+        const user = tokenRecord.user;
+        const roles = user.roles?.map(ur => ur.role?.name).filter(Boolean) || [];
+
+        // Attach user with roles to request
+        req.user = {
+            ...user, // Spread user details
+            roles: roles  // Ensure roles are always an array of strings
+        };
+        req.token = token;
+        
+        console.log('🔐 User authenticated:', user.email, 'Roles:', roles);
         next();
     } catch (error) {
         console.error('Auth middleware error:', error);

@@ -3,6 +3,7 @@ const {
     validatePassword,
     createUser,
     findUserByReferId } = require('../user/user.service');
+const { createReferralLog } = require('../referral/referral.service');
 const { processCommissionFee } = require('../commission/commission.service');
 
 const registerService = {
@@ -38,12 +39,25 @@ const registerService = {
                     console.log('✅ Valid referrer found:', referrer.email);
                     // Implement referral credit logic as needed
                     referrer_uuid = referrer.referral_uuid;
-                    processCommissionFee(referrer.id);
+                    
                 } else {
                     console.log('❌ Invalid referral ID:', refer_id);
                 }
             }
+
+            // Create the new user
             user = await createUser({ email, password, name, referrer_uuid });
+            if(!user){
+                throw new Error('User creation failed');
+            }
+            console.log('🎉 User registered successfully:', email);
+
+            // Create referral log and process commission fee if there is a referrer
+            console.log('🔄 Processing referral for user:', email);
+            createReferralLog(referrer_uuid, user.referral_uuid);
+
+            console.log('💰 Processing commission fee for referrer:', referrer_uuid);
+            processCommissionFee(referrer.id);
             return {
                 success: true,
                 message: 'Registration successful',

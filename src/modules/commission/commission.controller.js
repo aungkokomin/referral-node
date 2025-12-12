@@ -4,8 +4,10 @@ const commissionController = {
     // List all commission logs
     async commissionLogList(req, res) {
         try {
-            const commissions = await commissionService.getAllCommissions();
-            res.json(commissions);
+            const loggedInUser = req.user;
+            console.log('Logged in user:', loggedInUser);
+            const commissionlogs = await commissionService.getCommissionsByUserId(loggedInUser?.id || null);
+            res.json(commissionlogs);
         }
         catch (error) {
             res.status(500).json({ message: 'Error fetching commission logs', error });
