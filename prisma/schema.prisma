@@ -14,17 +14,21 @@ datasource db {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  email           String   @unique
-  name            String?
-  password        String?
-  referral_uuid   String   @unique
-  referrer_uuid   String?
-  roles           UserHasRole[] // Many-to-many relationship with Role through UserHasRole
-  tokens          personalAccessToken[]
-  commissionLogs  CommissionLog[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                    Int              @id @default(autoincrement())
+  email                 String           @unique
+  name                  String?
+  password              String?
+  referral_uuid         String           @unique
+  referrer_uuid         String?
+  roles                 UserHasRole[]
+  tokens                personalAccessToken[]
+  
+  // ✅ Two separate relations with clear names
+  commissionsEarned     CommissionLog[]  @relation("CommissionEarner")   // Commissions I earned
+  commissionsGenerated  CommissionLog[]  @relation("CommissionSource")   // Commissions I generated for others
+  
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
 }
 
 model Role {
@@ -67,8 +71,12 @@ model CommissionSetting {
 
 model CommissionLog {
   id              Int      @id @default(autoincrement())
-  userId          Int
-  user            User     @relation(fields: [userId], references: [id])
+  // ✅ Clear naming convention
+  referrerId      Int                                   // Person who owns the referral code (earns commission)
+  referrer        User     @relation("CommissionEarner", fields: [referrerId], references: [id])
+
+  refereeId       Int                                   // Person who used the referral code (new user)
+  referee         User     @relation("CommissionSource", fields: [refereeId], references: [id])
   amount          Float
   description     String?
   createdAt       DateTime @default(now())

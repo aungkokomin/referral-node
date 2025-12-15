@@ -59,7 +59,32 @@ const userController = {
         }catch (error){
             next(error);
         }
-    }
+    },
+    async changePassword(req, res, next){
+        try {
+            const userId = req.params.id;
+            const { newPassword } = req.body;
+            if (!newPassword) {
+                return res.status(400).json({ message: 'New password is required' });
+            }
+            const updatedUser = await userService.updatePassword(userId, newPassword);
+            if (!updatedUser) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            res.status(200).json({ message: 'Password updated successfully' });
+        } catch (error) {
+            next(error);
+        }
+    },
+    async generateReferralUrl(req, res, next){
+        try {
+            const userId = req.user.id;
+            const referralUrl = await userService.generateReferralUrl(userId);
+            res.status(200).json({ referralUrl });
+        } catch (error) {
+            next(error);
+        }
+    },
 }
 
 module.exports = userController; // export the userController

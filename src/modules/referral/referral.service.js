@@ -16,3 +16,5 @@ const referralService = {
         });
     }
 }
+
+module.exports = referralService;

@@ -57,7 +57,7 @@ const registerService = {
             createReferralLog(referrer_uuid, user.referral_uuid);
 
             console.log('💰 Processing commission fee for referrer:', referrer_uuid);
-            processCommissionFee(referrer.id);
+            processCommissionFee(referrer.id, user.id, 100); // Assuming a default paid amount of 100
             return {
                 success: true,
                 message: 'Registration successful',

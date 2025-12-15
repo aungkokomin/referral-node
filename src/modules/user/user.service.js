@@ -2,6 +2,7 @@ const express = require('express');
 const prisma = require('../../core/database/prisma');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
+const { generateReferralUrl } = require('./user.controller');
 
 const userService = {
     // Fetch all users
@@ -83,13 +84,14 @@ const userService = {
     },
 
     async findUserByReferId(refer_id){
+        console.log('Searching for user with referral ID:', refer_id);
+
         return await prisma.user.findUnique({
             where: { referral_uuid: refer_id },
             select: {
                 id: true,
                 email: true,
                 name: true,
-                roleId: true,
                 referral_uuid: true,
                 referrer_uuid: true,
                 createdAt: true,
@@ -177,7 +179,7 @@ const userService = {
     async findPersonalAccessToken(token) {
         return await prisma.personalAccessToken.findUnique({
             where: { token: token },
-            include: { 
+            include: {
                 user: {
                     include: {
                         roles: {
@@ -212,6 +214,15 @@ const userService = {
 
     async generateReferralUUID() {
         return uuidv4();
+    },
+
+    async generateReferralUrl(userId) {
+        const user = await this.getUserById(userId);
+        if(!user){
+            throw new Error('User not found');
+        }
+        const referralUrl = `${process.env.APP_BASE_URL}/register?ref=${user.referral_uuid}`;
+        return referralUrl;
     }
 };
 
