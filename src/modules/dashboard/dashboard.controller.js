@@ -1,5 +1,6 @@
 const userService = require('../user/user.service');
 const commissionService = require('../commission/commission.service');
+const referralService = require('../referral/referral.service');
 
 const dashboardController = {
     async index(req, res, next){
@@ -13,11 +14,13 @@ const dashboardController = {
             }
             
             const userCount = await userService.countUsers();
-            const commissionCount = await commissionService.countCommissionLogs();
+            const refereeCount = await referralService.countReferees(loggedInUser.id);
+            const totalCommissions = await commissionService.calculateTotalCommissions(loggedInUser.id);
             
             res.status(200).json({
                 userCount,
-                commissionCount
+                refereeCount,
+                totalCommissions: totalCommissions
             });
         } catch (error) {
             next(error);

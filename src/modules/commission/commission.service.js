@@ -1,5 +1,6 @@
 const express = require('express');
 const prisma = require('../../core/database/prisma');
+const userService = require('../user/user.service');
 
 const commissionService = {
     // Fetch all commissions logs
@@ -53,13 +54,26 @@ const commissionService = {
     async processCommissionFee(referrerId, refereeId, paidAmount = 100){
         const commissionRate = 0.10;
         const commissionFee = paidAmount * commissionRate;
-        
+        const referrer = await userService.findUserByReferId(referrerId); // Person who own referral code Or earned commission
+        const referee = await userService.findUserByReferId(refereeId); // Person who signed up using referral code
+
         return await commissionService.createCommission({
-            referrerId: referrerId,       // Person earning commission
-            refereeId: refereeId,         // Person who signed up
+            referrerId: referrer?.id,       // Person earning commission
+            refereeId: referee?.id,         // Person who signed up
             amount: commissionFee,
             description: `Commission for referring user ${refereeId}`
         });
+    },
+
+    // Calculate total commissions for a user
+    async calculateTotalCommissions(userId){
+        const result = await prisma.commissionLog.aggregate({
+            where: { referrerId: parseInt(userId) },
+            _sum: {
+                amount: true
+            }
+        });
+        return result._sum.amount || 0;
     }
 };
 

@@ -14,7 +14,24 @@ const referralService = {
                 refereeId
             }
         });
-    }
+    },
+
+    // Count referees for a given user
+    async countReferees(userId){
+        user = await prisma.user.findUnique({
+            where: {
+                id: parseInt(userId)
+            }
+        });
+        if(!user){
+            return 0;
+        }
+        return await prisma.referralLog.count({
+            where: {
+                referrerId: user.referral_uuid
+            }
+        });
+    },
 }
 
 module.exports = referralService;
