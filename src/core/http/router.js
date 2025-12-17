@@ -22,7 +22,7 @@ console.log('Loading commission routes with auth middleware...');
 router.use('/commission-logs', authMiddleware, require('../../modules/commission/commission-log.routes'));
 
 console.log('Loading commission setting routes with auth middleware...');
-router.use('/commission-settings', authMiddleware, require('../../modules/commission/commission-setting.routes'));
+router.use('/commission-settings', authMiddleware, require('../../modules/commission-setting/commission-setting.routes'));
 // app.use('/referrals', require('../../modules/referral/referral.routes'));
 
 module.exports = router;

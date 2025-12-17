@@ -1,8 +1,6 @@
-const express = require('express');
 const prisma = require('../../core/database/prisma');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const { generateReferralUrl } = require('./user.controller');
 
 const userService = {
     // Fetch all users
@@ -12,7 +10,6 @@ const userService = {
                 id: true,
                 email: true,
                 name: true,
-                roleId: true,
                 referral_uuid: true,
                 referrer_uuid: true,
                 createdAt: true,
@@ -121,6 +118,7 @@ const userService = {
 
     async createUser(data){
         const hashedPassword = await bcrypt.hash(data.password, 10);
+        console.log('Creating user with email:', data.email);
         return await prisma.user.create({
             data: {
                 name: data.name,
@@ -223,7 +221,34 @@ const userService = {
         }
         const referralUrl = `${process.env.APP_BASE_URL}/register?ref=${user.referral_uuid}`;
         return referralUrl;
-    }
+    },
+
+    async assignRoleByRoleId(userId, roleId) {
+        return await prisma.userHasRole.create({
+            data: {
+                userId: userId,
+                roleId: roleId
+            }
+        });
+    },
+
+    async removeRoleByRoleId(userId, roleId) {
+        return await prisma.userRole.deleteMany({
+            where: {
+                userId: userId,
+                roleId: roleId
+            }
+        });
+    },
+
+    async getUserRoles(userId) {
+        return await prisma.userRole.findMany({
+            where: { userId: userId },
+            include: {
+                role: true
+            }
+        });
+    },
 };
 
 module.exports = userService;

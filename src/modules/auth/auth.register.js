@@ -2,9 +2,11 @@ const {
     findUserByEmail,
     validatePassword,
     createUser,
-    findUserByReferId } = require('../user/user.service');
+    findUserByReferId,
+    assignRoleByRoleId } = require('../user/user.service');
 const { createReferralLog } = require('../referral/referral.service');
 const { processCommissionFee } = require('../commission/commission.service');
+const { getRoleByName } = require('../role/role.service');
 
 const registerService = {
     /**
@@ -51,6 +53,12 @@ const registerService = {
                 throw new Error('User creation failed');
             }
             console.log('🎉 User registered successfully:', email);
+
+            const role = await getRoleByName('guest');
+            if(role){
+                console.log('🔐 Assigning role "guest" to user:', email);
+                await assignRoleByRoleId(user.id, role.id);
+            }
 
             // Create referral log and process commission fee if there is a referrer
             console.log('🔄 Processing referral for user:', email);

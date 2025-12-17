@@ -15,10 +15,7 @@ const requireRole = (...allowedRoles) => {
         }
 
         // Get user roles (handle both array and relation structure)
-        const userRoles = req.user.roles?.map(ur => {
-            // Handle if roles is array of objects with role property
-            return typeof ur === allowedRoles ? ur : ur.role?.name;
-        }).filter(Boolean) || [];
+        const userRoles = req.user.roles;
 
         console.log('👤 User roles:', userRoles);
         console.log('🔐 Required roles:', allowedRoles);
