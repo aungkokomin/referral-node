@@ -1,4 +1,4 @@
-const prisma = require('../../core/database/prisma');
+const prisma = require('../../database/prisma');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 

@@ -1,4 +1,4 @@
-const prisma = require('../../core/database/prisma');
+const prisma = require('../../database/prisma');
 
 const roleService = {
     // Fetch all roles

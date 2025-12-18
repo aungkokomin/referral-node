@@ -1,8 +1,8 @@
 require('dotenv').config(); // Load environment variables from .env file
 
 const express = require('express');
-const router = require('./core/http/router');
-const env = require('./core/config/env');
+const router = require('./http/router');
+const env = require('./config/env');
 const app = express();
 
 // Middleware setup

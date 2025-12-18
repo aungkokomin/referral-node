@@ -1,5 +1,5 @@
 const express = require('express');
-const prisma = require('../../core/database/prisma');
+const prisma = require('../../database/prisma');
 const userService = require('../user/user.service');
 
 const commissionService = {
