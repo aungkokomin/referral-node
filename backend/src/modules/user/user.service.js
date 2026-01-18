@@ -1,6 +1,6 @@
 const prisma = require('../../database/prisma');
 const bcrypt = require('bcrypt');
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = import('uuid');
 
 const userService = {
     // Fetch all users
